@@ -1,2 +1,4 @@
 images/*
 db.*
+*.pyc
+imguploader/migrations/*
