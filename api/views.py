@@ -15,6 +15,8 @@ def post(request):
     username = request.POST["username"]
     fileobj = request.FILES["fileinput"]
     data = fileobj.read()
+    if "image" not in fileobj.content_type :
+        return HttpResponse('{"status":500,"error":"Image type not recogonsied"}',content_type="application/json",status=500)
     if (not os.path.isdir(ROOT_DIR+"/images/"+username)):
         os.mkdir(ROOT_DIR+"/images/"+username+"/")
 
@@ -34,12 +36,12 @@ def post(request):
         os.remove(ROOT_DIR+"/images/"+username+"/"+filename+".png")
 
     jsonreturnurl = username+"/"+filename+ext
-    return HttpResponse('{"status" : 200 , "url" : "'+jsonreturnurl+'"}',content_type="application/json")
+    return HttpResponse('{"status" : 200 , "url" : "'+jsonreturnurl+'"}',content_type="application/json",status=200)
 
 def userimages(request,username):
     if (not os.path.isdir(ROOT_DIR+"/images/"+username)):
         jsonresp = '{"status":404,"error":"User not found"}'
-        return HttpResponse(jsonresp,content_type="application/json")
+        return HttpResponse(jsonresp,content_type="application/json",status=404)
     images = os.listdir(ROOT_DIR+"/images/"+username)
     jsonreturn = ""
     for image in images:
@@ -52,10 +54,10 @@ def userimages(request,username):
 def serveimage(request,username,imgname):
     if (not os.path.isdir(ROOT_DIR+"/images/"+username)):
         jsonresp = '{"status":404,"error":"User not found"}'
-        return HttpResponse(jsonresp,content_type="application/json")
+        return HttpResponse(jsonresp,content_type="application/json",status=404)
     if (not os.path.exists(ROOT_DIR+"/images/"+username+"/"+imgname)):
         jsonresp = '{"status":404,"error":"Image not found"}'
-        return HttpResponse(jsonresp,content_type="application/json")
+        return HttpResponse(jsonresp,content_type="application/json",status=404)
     img = open(ROOT_DIR+"/images/"+username+"/"+imgname,"r")
     data = img.read()
     return HttpResponse(data,content_type="image/jpeg")
